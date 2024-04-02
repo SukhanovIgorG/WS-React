@@ -1,0 +1,15 @@
+.message {
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  width: fit-content;
+  min-width: 30%;
+  max-width: 50%;
+  background-color: darkgreen;
+  align-self: flex-start;
+}
+
+.myMessage {
+  background-color: chocolate;
+  align-self: flex-end;
+}

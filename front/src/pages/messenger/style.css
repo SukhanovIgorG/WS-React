@@ -1,0 +1,25 @@
+.messenger {
+  color: var(--accent-color);
+  border: var(--accent-color) solid 1px;
+
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+
+  display: flex;
+}
+
+.container {
+  height: 100%;
+}
+
+.contacts {
+  background-color: gray;
+  flex: 1;
+  overflow-y: scroll;
+}
+
+.viewer {
+  background-color: var(--bg-color-prime);
+  flex: 2;
+}
