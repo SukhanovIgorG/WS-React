@@ -5,7 +5,7 @@ type AdapterResult<T> = {
   findAll: () => T[];
   findById: (id: string) => T | undefined;
   findByFields: (fields: Partial<T>) => T[];
-  removeById: (id: string) => T[]; // TODO: проверить что возвращается после удаления с реального сервера
+  removeById: (id: string) => T | null;
   updateById: (id: string, diff: Partial<T>) => T | undefined;
 };
 
@@ -33,9 +33,13 @@ export function createAdapter<T extends Entity>(initialData: T[]): AdapterResult
     return res
   };
 
-  const removeById = (id: string): T[] => {
-    data = data.filter(item => item.id !== id);
-    return data;
+  const removeById = (id: string) => {
+    const deleted = data.find(item => item.id === id);
+    if (deleted) {      
+      data = data.filter(item => item.id !== id);
+      return deleted;
+    }
+    return null;
   };
 
   const updateById = (id: string, diff: Partial<T>): T | undefined => {

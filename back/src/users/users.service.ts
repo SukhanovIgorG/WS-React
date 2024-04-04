@@ -2,23 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { createAdapter } from 'src/utils/adapter';
 import { User } from 'src/types';
-import { usersDB } from 'src/dataBase/users';
-
-const usersAdapter = createAdapter(usersDB);
+import { userAdapter } from 'src/dataBase';
 
 @Injectable()
 export class UsersService {
   create(createUserDto: User) {
     if (!createUserDto.id) createUserDto.id = uuid();
-    return usersAdapter.add(createUserDto);
+    return userAdapter.add(createUserDto);
   }
 
   findAll() {
-    return usersAdapter.findAll();
+    return userAdapter.findAll();
   }
 
   findMe() {
     const meId = 'testUser1';
-    return usersAdapter.findById(meId);
+    return userAdapter.findById(meId);
   }
 }

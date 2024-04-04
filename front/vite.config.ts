@@ -7,12 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3030', // URL вашего бэкенд-сервера
+        target: 'http://localhost:3030', // URL вашего backend-сервера
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       },
       '/socket.io': {
-        target: 'ws://localhost:5174',
+        target: 'ws://localhost:3030',
         ws: true,
       },
     }

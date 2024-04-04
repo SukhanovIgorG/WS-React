@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import { useMutation } from 'react-query';
-import { Message } from '../../../../types';
-import { deleteMessage } from '../../../../api';
+import { useQueryClient } from 'react-query';
+import { SocketApi } from '../../../../api/socket-api';
+import type { Message } from '../../../../types';
 
 import './style.css';
 
@@ -12,10 +12,22 @@ interface MessageItemProps {
 
 export const MessageItem = ({ message, my }: MessageItemProps): ReactNode => {
   const { text, date, id } = message;
-  const mutation = useMutation(deleteMessage);
+  const queryClient = useQueryClient();
+
+  const handleDellMessageRes = (res: { id: string; deleted: boolean }) => {
+    if (res.id) {
+      const currentMessages = queryClient.getQueryData<Message[]>('messages');
+      const updatedMessages = (currentMessages || []).filter(item => item.id !== res.id);
+      queryClient.setQueryData('messages', updatedMessages);
+      SocketApi.socket?.off('dell-message-res', handleDellMessageRes);
+    } else {
+      alert('При удалении сообщения произошла ошибка')
+    }
+  };
   
   const deleteHandler = () => {
-    mutation.mutate(id);
+    SocketApi.socket?.emit('dell-message', id);
+    SocketApi.socket?.on('dell-message-res', handleDellMessageRes);
   };
 
   return (

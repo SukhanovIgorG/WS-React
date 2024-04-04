@@ -1,27 +1,58 @@
-import { ChangeEvent, FormEventHandler, useState } from 'react';
-import { useMutation } from 'react-query';
+import { ChangeEvent, FormEventHandler, useEffect, useState } from 'react';
+import { useQueryClient } from 'react-query';
 import { Message } from '../../../types';
-import { sendMessage } from '../../../api';
-import './style.css'
+import { SocketApi } from '../../../api/socket-api';
+
+import './style.css';
+
 interface MessageInputProps {
   currentUser: string;
   currentDialog: string;
 }
 
 export const MessageInput = ({ currentUser, currentDialog }: MessageInputProps) => {
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState('');
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    SocketApi.socket?.on('new-message', handleNewMessage);
+    SocketApi.socket?.on('dell-message', handleDellMessage);
+    () => {
+      SocketApi.socket?.off('new-message', handleNewMessageResponse);
+      SocketApi.socket?.off('dell-message', handleDellMessage);
+    }
+  },[]);
+  
   const handelChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
-  }
+  };
 
-  const mutations = useMutation(sendMessage, {
-    onSuccess: () => {
+  const handleNewMessage = (res: Message) => {
+    if (res.id) {
+      const currentMessages = queryClient.getQueryData<Message[]>('messages');
+      const updatedMessages = [...(currentMessages || []), res];
+      queryClient.setQueryData('messages', updatedMessages);
+    }
+  };
+  const handleDellMessage = (res: Message) => {
+    if (res.id) {
+      const currentMessages = queryClient.getQueryData<Message[]>('messages');
+      const updatedMessages = (currentMessages || []).filter(item => item.id !== res.id);
+      queryClient.setQueryData('messages', updatedMessages);
+    }
+  };
+
+  const handleNewMessageResponse = (res: Message) => {
+    if (res.id) {
+      const currentMessages = queryClient.getQueryData<Message[]>('messages');
+      const updatedMessages = [...(currentMessages || []), res];
+      queryClient.setQueryData('messages', updatedMessages);
       setMessage('');
-    },
-    onError: (error) => {
-      console.error('Ошибка при отправке сообщения:', error);
-    },
-  });
+      SocketApi.socket?.off('new-message-res', handleNewMessageResponse);
+    } else {
+      alert('При отправке сообщения произошла ошибка');
+    }
+  };
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -32,8 +63,10 @@ export const MessageInput = ({ currentUser, currentDialog }: MessageInputProps) 
       date: new Date().toDateString(),
       deleted: false,
     }
-    mutations.mutate(dto);
-  }
+    SocketApi.socket?.emit('new-message', dto);
+    SocketApi.socket?.on('new-message-res', handleNewMessageResponse);
+  };
+
   return (
     <form className="inputWindow" id="inputWindow" onSubmit={handleSubmit}>
       <input
@@ -46,5 +79,5 @@ export const MessageInput = ({ currentUser, currentDialog }: MessageInputProps) 
       />
       <button type='submit' className="button">отправить</button>
     </form>
-  )
-}
+  );
+};

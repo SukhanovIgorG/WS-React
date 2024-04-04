@@ -1,5 +1,5 @@
 import { FormEventHandler, useEffect, useMemo, useState } from 'react';
-import { UseQueryResult, useMutation, useQuery } from 'react-query';
+import { UseQueryResult, useMutation, useQuery, useQueryClient } from 'react-query';
 import { Contact, Dialog, MessageInput } from '../../components';
 import { createUser, getMessages, getUsers } from '../../api';
 import type { User } from '../../../../shared/types';
@@ -18,16 +18,27 @@ export const MessengerPage = () => {
   const [open, setOpen] = useState(false);
   const [currentDialog, setCurrentDialog] = useState('');
 
-  const mutation = useMutation(createUser);
+  const allMessages = useQuery('messages', getMessages);
+  const allUsers = useQuery('users', getUsers);
+
+  const queryClient = useQueryClient();
+  
+  const mutation = useMutation(createUser, {
+    onSuccess: (newUser) => {
+      const currentUsers = queryClient.getQueryData<User[]>('users');
+      const updatedUsers = [...(currentUsers || []), newUser];
+      queryClient.setQueryData('users', updatedUsers);
+    },
+    onError: () => {
+      alert('Ошибка создания пользователя');
+    }
+  });
   const createUserHandler: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     mutation.mutate({ name: newUser });
     setNewUser('');
     setOpen(false);
   };
-
-  const allMessages = useQuery('messages', getMessages);
-  const allUsers = useQuery('users', getUsers);
 
   const {
     data: users,
@@ -38,7 +49,9 @@ export const MessengerPage = () => {
 
   useEffect(() => {
     const me = users?.find(item => item.name === user.name);
-    if (me) setUser(me);
+    if (me) {
+      setUser(me)
+    }
   }, [user, users]);
 
   if (userError) alert('User error');
