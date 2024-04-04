@@ -1,11 +1,13 @@
 export interface Message {
   id: string;
-  user: User;
+  from: User['id'];
+  to: User['id'];
   date: string;
   text: string;
+  deleted: boolean;
 }
 
 export interface User {
+  id: string;
   name: string;
-  email: string;
 }

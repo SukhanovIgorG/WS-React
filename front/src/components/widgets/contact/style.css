@@ -13,13 +13,15 @@
   border-radius: 10px;
   background-color: gray;
 }
+.card:hover {
+  background-color: var(--hover-color);
+}
 .card:active {
   background-color: var(--accent-color);
 }
-.card:hover {
-  transform: scale(1.1);
+.activeDialog {
+  background-color: var(--accent-color);
 }
-
 
 .photo {
   height: 40px;

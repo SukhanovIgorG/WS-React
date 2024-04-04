@@ -1,4 +1,9 @@
+:root {
+  --user-card-h: 100px;
+}
+
 .messenger {
+  position: relative;
   color: var(--accent-color);
   border: var(--accent-color) solid 1px;
 
@@ -11,15 +16,158 @@
 
 .container {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.user {
+  height: 100%;
+  flex: 1;
 }
 
 .contacts {
-  background-color: gray;
+  /* height: calc(100% - var(--user-card-h) - var(--user-card-h)); */
   flex: 1;
-  overflow-y: scroll;
+  background-color: gray;
+  overflow-y: auto;
 }
 
 .viewer {
   background-color: var(--bg-color-prime);
   flex: 2;
+}
+
+/* user card */
+.userCard {
+  width: 100%;
+  height: var(--user-card-h);
+  margin: 0 auto;
+  padding: 0 20px;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  background-color: var(--accent-color);
+}
+
+.userContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.desc {
+  color: white;
+  width: 100%;
+}
+.userPhoto {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: blueviolet;
+
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.userName {
+  color: white;
+  width: 50%;
+  height: 40px;
+  padding: 5px;
+}
+
+/* create card */
+.createCard {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  background-color: var(--bg-color-accent);
+  overflow: hidden;
+  cursor: pointer;
+}
+.createCard:hover {
+  background-color: var(--bg-color-prime);
+}
+.createCardOpen {
+  height: var(--user-card-h);
+}
+.createDesc {
+  color: white;
+  width: 100%;
+}
+
+.createPhoto {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: blueviolet;
+
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.createName {
+  color: white;
+  width: 50%;
+  height: 40px;
+  padding: 5px;
+}
+
+.loaderContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.imageLoader {
+  height: 50%;
+  width: 50%;
+}
+
+
+.imageLoader {
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+  animation: logo-spin 10s linear infinite;
+}
+.imageLoader:hover {
+  filter: drop-shadow(0 0 12em #646cffaa);
+}
+.imageLoader.react:hover {
+  filter: drop-shadow(0 0 12em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

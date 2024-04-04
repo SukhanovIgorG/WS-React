@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { ChatGateway } from './chat.gateway';
 import { MessageModule } from './message/message.module';
 import { MessageService } from './message/message.service';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [MessageModule],
+  imports: [MessageModule, UsersModule],
   controllers: [AppController],
   providers: [AppService, MessageService, ChatGateway],
 })
