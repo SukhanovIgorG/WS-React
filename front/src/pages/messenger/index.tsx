@@ -1,11 +1,13 @@
-import { FormEventHandler, useEffect, useMemo, useState } from 'react';
+import { FormEventHandler, useCallback, useEffect, useMemo, useState } from 'react';
 import { UseQueryResult, useMutation, useQuery, useQueryClient } from 'react-query';
 import { Contact, Dialog, MessageInput } from '../../components';
 import { createUser, getMessages, getUsers } from '../../api';
-import type { User } from '../../../../shared/types';
+
+import type { Message, User } from '../../types';
 
 import ReactSVG from '../../assets/react.svg';
 import './style.css';
+import { SocketApi } from '../../api/socket-api';
 
 const mocUser = {
   name: 'testUser1',
@@ -22,7 +24,33 @@ export const MessengerPage = () => {
   const allUsers = useQuery('users', getUsers);
 
   const queryClient = useQueryClient();
-  
+
+  const handleNewMessage = useCallback((res: Message) => {
+    if (res.id) {
+      const currentMessages = queryClient.getQueryData<Message[]>('messages');
+      const updatedMessages = [...(currentMessages || []), res];
+      queryClient.setQueryData('messages', updatedMessages);
+    }
+  }, [queryClient]);
+
+  const handleDellMessage = useCallback((res: Message) => {
+    if (res.id) {
+      const currentMessages = queryClient.getQueryData<Message[]>('messages');
+      const updatedMessages = (currentMessages || []).filter(item => item.id !== res.id);
+      queryClient.setQueryData('messages', updatedMessages);
+    }
+  }, [queryClient]);
+
+  useEffect(() => {
+    console.log('subscribe :>> ');
+    SocketApi.socket?.on('new-message', handleNewMessage);
+    SocketApi.socket?.on('dell-message', handleDellMessage);
+    () => {
+      SocketApi.socket?.off('new-message', handleNewMessage);
+      SocketApi.socket?.off('dell-message', handleDellMessage);
+    }
+  }, []);
+
   const mutation = useMutation(createUser, {
     onSuccess: (newUser) => {
       const currentUsers = queryClient.getQueryData<User[]>('users');

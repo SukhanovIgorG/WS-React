@@ -1,28 +1,30 @@
 .message {
   position: relative;
   border-radius: 10px;
-  padding: 10px 25px 25px;
+  padding: 15px 25px 25px;
   margin: 5px;
   width: fit-content;
   min-width: 30%;
   max-width: 50%;
-  background-color: chocolate;
-  align-self: flex-end;
+  background-color: gray;
+  align-self: flex-start;
 }
 
 .myMessage {
   background-color: darkgreen;
-  align-self: flex-start;
+  align-self: flex-end;
 }
 
 .text {
   color: white;
 }
+
 .date {
   font-size: 10px;
   position: absolute;
   bottom: 5px;
   right: 5px;
+  color: aliceblue;
 }
 
 .deleteButton {
@@ -37,6 +39,11 @@
   background-color: transparent;
   text-align: center;
   border-radius: 50%;
+  visibility: hidden;
+}
+
+.message:hover .deleteButton {
+  visibility: visible;
 }
 
 .deleteButton:active,

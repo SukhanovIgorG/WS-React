@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEventHandler, useEffect, useState } from 'react';
+import { ChangeEvent, FormEventHandler, useState } from 'react';
 import { useQueryClient } from 'react-query';
 import { Message } from '../../../types';
 import { SocketApi } from '../../../api/socket-api';
@@ -14,32 +14,8 @@ export const MessageInput = ({ currentUser, currentDialog }: MessageInputProps) 
   const [message, setMessage] = useState('');
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-    SocketApi.socket?.on('new-message', handleNewMessage);
-    SocketApi.socket?.on('dell-message', handleDellMessage);
-    () => {
-      SocketApi.socket?.off('new-message', handleNewMessageResponse);
-      SocketApi.socket?.off('dell-message', handleDellMessage);
-    }
-  },[]);
-  
   const handelChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
-  };
-
-  const handleNewMessage = (res: Message) => {
-    if (res.id) {
-      const currentMessages = queryClient.getQueryData<Message[]>('messages');
-      const updatedMessages = [...(currentMessages || []), res];
-      queryClient.setQueryData('messages', updatedMessages);
-    }
-  };
-  const handleDellMessage = (res: Message) => {
-    if (res.id) {
-      const currentMessages = queryClient.getQueryData<Message[]>('messages');
-      const updatedMessages = (currentMessages || []).filter(item => item.id !== res.id);
-      queryClient.setQueryData('messages', updatedMessages);
-    }
   };
 
   const handleNewMessageResponse = (res: Message) => {
@@ -47,10 +23,7 @@ export const MessageInput = ({ currentUser, currentDialog }: MessageInputProps) 
       const currentMessages = queryClient.getQueryData<Message[]>('messages');
       const updatedMessages = [...(currentMessages || []), res];
       queryClient.setQueryData('messages', updatedMessages);
-      setMessage('');
       SocketApi.socket?.off('new-message-res', handleNewMessageResponse);
-    } else {
-      alert('При отправке сообщения произошла ошибка');
     }
   };
 
@@ -64,6 +37,7 @@ export const MessageInput = ({ currentUser, currentDialog }: MessageInputProps) 
       deleted: false,
     }
     SocketApi.socket?.emit('new-message', dto);
+    setMessage('');
     SocketApi.socket?.on('new-message-res', handleNewMessageResponse);
   };
 
