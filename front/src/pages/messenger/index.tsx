@@ -42,14 +42,15 @@ export const MessengerPage = () => {
   }, [queryClient]);
 
   useEffect(() => {
-    console.log('subscribe :>> ');
-    SocketApi.socket?.on('new-message', handleNewMessage);
-    SocketApi.socket?.on('dell-message', handleDellMessage);
-    () => {
-      SocketApi.socket?.off('new-message', handleNewMessage);
-      SocketApi.socket?.off('dell-message', handleDellMessage);
-    }
-  }, []);
+    // SocketApi.socket?.on('new-message', handleNewMessage);
+    // SocketApi.socket?.on('dell-message', handleDellMessage);
+    // () => {
+    //   SocketApi.socket?.off('new-message', handleNewMessage);
+    //   SocketApi.socket?.off('dell-message', handleDellMessage);
+    // }
+    SocketApi.setHandleNewMessage(handleNewMessage);
+    SocketApi.setHandleDellMessage(handleDellMessage);
+  }, [handleDellMessage, handleNewMessage]);
 
   const mutation = useMutation(createUser, {
     onSuccess: (newUser) => {
